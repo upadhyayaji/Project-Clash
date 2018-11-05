@@ -1,0 +1,10 @@
+battles_1v1 = []
+for b in battles:
+    if b.get('type') == 'PvP':
+            battles_1v1.append(b)
+
+test = []
+for i in battles_1v1[0].get('team')[0].get('deck'):
+    test.append(i.get('name'))
+    
+ 
