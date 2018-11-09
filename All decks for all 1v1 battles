@@ -1,0 +1,10 @@
+all_decks = []
+
+for battle_number in range(0, len(battles_1v1)):
+    
+    test = []
+    
+    for i in battles_1v1[battle_number].get('team')[0].get('deck'):
+        
+        test.append(i.get('name'))
+    print(test)
