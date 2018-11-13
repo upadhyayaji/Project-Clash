@@ -1,0 +1,7 @@
+
+top = client.get_top_players()
+
+#getting ids of all the top 200 players..
+all_ids = []
+for ids in top:
+    all_ids.append(ids.tag)
