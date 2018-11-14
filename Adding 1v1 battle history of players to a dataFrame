@@ -1,0 +1,46 @@
+#Getting list of top players..
+top = client.get_top_players()
+
+#getting ids of top players..
+all_ids = []
+for ids in top:
+    all_ids.append(ids.tag)
+
+#Getting battle history of players ranked 10-20..
+battles_20 = []
+for i in range(10,20):
+    battles_20.append(client.get_player_battles(all_ids[i]))
+
+#Getting their 1v1 battles..
+battles_20_1v1 = []
+for i in battles_20:
+    for each in i:
+        if each.get('type') == 'PvP':
+            battles_20_1v1.append(each)
+            
+ #Converting each battle into a pandasDataFrame...
+ data4 = pd.DataFrame(columns=['deck1_card1','deck1_card2','deck1_card3','deck1_card4',
+                              'deck1_card5','deck1_card6', 'deck1_card7', 'deck1_card8',
+                            'deck2_card1','deck2_card2','deck2_card3','deck_card4',
+                            'deck2_card5','deck2_card6', 'deck2_card7', 'deck2_card8', 'winner'])
+
+all_decks = []
+
+for battle_number in range(0, len(battles_20_1v1)):
+    test = []
+    
+    
+    for i in battles_20_1v1[battle_number].get('team')[0].get('deck'):
+        
+        test.append(i.get('name'))
+        
+    for i in battles_20_1v1[battle_number].get('opponent')[0].get('deck'):
+        
+        test.append(i.get('name'))
+
+    test.append(battles_20_1v1[battle_number].get('winner'))
+
+    data4.loc[battle_number] = test
+    
+    
+data4
