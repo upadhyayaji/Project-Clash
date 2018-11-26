@@ -1,0 +1,114 @@
+#importing libraries
+
+import clashroyale
+import os
+import pandas as pd
+import numpy as np
+import json
+from pandas.io.json import json_normalize
+token = os.getenv('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTgwOCwiaWRlbiI6IjQ1MjkyMDg5MzA2NTM5NjIyNSIsIm1kIjp7fSwidHMiOjE1MzkwMjM1NDE1MzF9.MjPrXM3vzwYidGneZixT0SlkU3PbU35wz2DfL3uIqIM')  # get your developer key somehow.
+client = clashroyale.RoyaleAPI(token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTgwOCwiaWRlbiI6IjQ1MjkyMDg5MzA2NTM5NjIyNSIsIm1kIjp7fSwidHMiOjE1MzkwMjM1NDE1MzF9.MjPrXM3vzwYidGneZixT0SlkU3PbU35wz2DfL3uIqIM')
+
+#getting details of top 200 players
+top = client.get_top_players()
+
+#getting ids of top 200 players
+all_ids = []
+for ids in top:
+    all_ids.append(ids.tag)
+    
+
+#getting player and opponent decks for each battle and storing in a data frame. Same process repeated 6 times.
+battles_0to20 = []
+for i in range(0,20):
+    battles_0to20.append(client.get_player_battles(all_ids[i]))
+
+battles_0to20_1v1 = []
+for i in battles_0to20:
+    for each in i:
+        if each.get('type') == 'PvP':
+            battles_0to20_1v1.append(each)
+            
+data0 = pd.DataFrame(columns=['deck1_card1','deck1_card2','deck1_card3','deck1_card4','deck1_card5','deck1_card6', 'deck1_card7', 'deck1_card8',
+                            'deck2_card1','deck2_card2','deck2_card3','deck_card4','deck2_card5','deck2_card6', 'deck2_card7', 'deck2_card8', 'winner'])
+
+
+for battle_number in range(0, len(battles_0to20_1v1)):
+    test = []
+    
+    
+    for i in battles_0to20_1v1[battle_number].get('team')[0].get('deck'):
+        
+        test.append(i.get('name'))
+        
+    for i in battles_0to20_1v1[battle_number].get('opponent')[0].get('deck'):
+        
+        test.append(i.get('name'))
+
+    test.append(battles_0to20_1v1[battle_number].get('winner'))
+
+    data0.loc[battle_number] = test
+    
+    
+data0.head()
+
+
+
+#concatinating all datasets
+masterData = pd.concat([data0,data1,data2,data3,data4,data5,data6], ignore_index=True)
+
+
+#removing draws from the battle history
+masterData2 = masterData
+masterData2 = masterData2[masterData2['winner'] != 0]
+
+
+#converting winner value to 1 for victory and 0 for loss
+md2 = masterData2
+md2['winner'] = md2['winner'].apply(lambda x: 1 if x > 0 else 0)
+
+#index reset
+md2 = md2.reset_index(drop=True)
+
+
+
+#getting a list of card names and converting them to a list for creating a new dataframe
+profile = client.get_player('#8JC0920Y')  
+deck1 = []
+for cards in range(0,89):
+    deck1.append(profile.get('cards')[cards].get('name'))
+deck2 = []
+for i in deck1:
+    deck2.append(i.upper())
+cards = []
+cards = deck1 + deck2
+
+
+# creating a new dataset with 178 columns (for player's deck and opponents' deck)
+empty = pd.DataFrame(columns = cards)
+empty['winner'] = md2['winner']
+empty_nowin = empty.drop('winner', axis = 1)
+empty_nowin.shape
+md2_nowin = md2.drop('winner', axis = 1)
+md2_nowin.shape
+
+
+
+for i in range(3088):
+    for j in range(0,8):
+        for k in range(0,89):
+            if md2_nowin.iloc[i,j] == cards[k]:
+                empty_nowin.iloc[i,k] = 1
+
+for i in range(3088):
+    for j in range(8,16):
+        for k in range(89,178):
+            if md2_nowin.iloc[i,j].upper() == cards[k]:
+                empty_nowin.iloc[i,k] = 1
+                
+                
+final2 = empty_nowin
+final2 = final2.fillna(0)
+final2['winner'] = md2['winner']
+
+                
