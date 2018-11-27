@@ -6,8 +6,8 @@ import pandas as pd
 import numpy as np
 import json
 from pandas.io.json import json_normalize
-token = os.getenv('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTgwOCwiaWRlbiI6IjQ1MjkyMDg5MzA2NTM5NjIyNSIsIm1kIjp7fSwidHMiOjE1MzkwMjM1NDE1MzF9.MjPrXM3vzwYidGneZixT0SlkU3PbU35wz2DfL3uIqIM')  # get your developer key somehow.
-client = clashroyale.RoyaleAPI(token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTgwOCwiaWRlbiI6IjQ1MjkyMDg5MzA2NTM5NjIyNSIsIm1kIjp7fSwidHMiOjE1MzkwMjM1NDE1MzF9.MjPrXM3vzwYidGneZixT0SlkU3PbU35wz2DfL3uIqIM')
+token = os.getenv('yourkey')  # get your developer key somehow.
+client = clashroyale.RoyaleAPI(token = 'yourkey')
 
 #getting details of top 200 players
 top = client.get_top_players()
